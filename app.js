@@ -29,7 +29,7 @@ ${$("div.Hixd").text()}
   parseWeather();
 });
 
-bot.command("timesheet", (ctx) => {
+bot.command("timesheet", async (ctx) => {
   ctx.reply("timesheet");
   const parseTimesheet = async () => {
     const URL = "http://109.237.0.203:8083/raspisanie/www/cg38.htm";
@@ -54,12 +54,6 @@ bot.command("timesheet", (ctx) => {
           arr.push(a(e).text());
         }
       });
-      // console.log(arr[0].slice(10, 12));
-      // console.log(arr[6].slice(10, 12));
-      // console.log(arr[12].slice(10, 12));
-      // console.log(arr[18].slice(10, 12));
-      // console.log(arr[24].slice(10, 12));
-      // console.log(arr[23]);
       arrTimesheet = [
         [
           {
@@ -122,38 +116,65 @@ bot.command("timesheet", (ctx) => {
           },
         ],
       ];
-      // arr2.push(arrTimesheet)
-      // console.log(arrTimesheet[0]);
-      // console.log(arrTimesheet[1]);
-      // console.log(arrTimesheet[2]);
-      // console.log(arrTimesheet[3]);
-      // console.log(arrTimesheet[4]);
-      // ctx.reply(toString(Object.keys(arrTimesheet[0][0])).replace(/"/, ""));
-      // let str = Object.keys(arrTimesheet[0][0])
-      // console.log(toString(str).replace(/"/, ""));
-      /*
-            [
-          {
-            [arr[0].slice(10, 12)]: [
-              arr[0].slice(12, 120),
-              arr[1],
-              arr[2],
-              arr[3],
-              arr[4],
-              arr[5],
-            ],
-          },
-        ],
-      */
+
       ctx.reply(
-        JSON.stringify(Object.keys(arrTimesheet[0][0])).replace(/"/gi, "").slice(1, 3)
+        JSON.stringify(Object.keys(arrTimesheet[0][0]))
+          .replace(/"/gi, "")
+          .slice(1, 3)
       );
       for (const key of arrTimesheet[0][0].Пн) {
         setTimeout(() => {
           ctx.reply(key);
         }, 1000);
-        console.log(key);
       }
+      setTimeout(() => {
+        ctx.reply(
+          JSON.stringify(Object.keys(arrTimesheet[1][0]))
+            .replace(/"/gi, "")
+            .slice(1, 3)
+        );
+        for (const key of arrTimesheet[1][0].Вт) {
+          setTimeout(() => {
+            ctx.reply(key);
+          }, 1000);
+        }
+      }, 3000);
+      setTimeout(() => {
+        ctx.reply(
+          JSON.stringify(Object.keys(arrTimesheet[2][0]))
+            .replace(/"/gi, "")
+            .slice(1, 3)
+        );
+        for (const key of arrTimesheet[2][0].Ср) {
+          setTimeout(() => {
+            ctx.reply(key);
+          }, 1000);
+        }
+      }, 6000);
+      setTimeout(() => {
+        ctx.reply(
+          JSON.stringify(Object.keys(arrTimesheet[3][0]))
+            .replace(/"/gi, "")
+            .slice(1, 3)
+        );
+        for (const key of arrTimesheet[3][0].Чт) {
+          setTimeout(() => {
+            ctx.reply(key);
+          }, 1000);
+        }
+      }, 9000);
+      setTimeout(() => {
+        ctx.reply(
+          JSON.stringify(Object.keys(arrTimesheet[4][0]))
+            .replace(/"/gi, "")
+            .slice(1, 3)
+        );
+        for (const key of arrTimesheet[4][0].Пт) {
+          setTimeout(() => {
+            ctx.reply(key);
+          }, 1000);
+        }
+      }, 12000);
     });
   };
   parseTimesheet();
