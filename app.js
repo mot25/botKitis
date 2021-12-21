@@ -33,13 +33,13 @@ bot.command("timesheet", async (ctx) => {
   ctx.reply("timesheet");
   const parseTimesheet = async () => {
     const URL = "http://109.237.0.203:8083/raspisanie/www/cg38.htm";
-    needle.get(URL, function (err, res) {
+    needle.get(URL, function async(err, res) {
       if (err) throw err;
       let a = cheerio.load(res.body);
       let abc = a("tr");
       let arr = [];
-      let arr2 = [];
       let arrTimesheet;
+
       abc.each((i, e) => {
         if (
           (i > 11) &
@@ -117,64 +117,52 @@ bot.command("timesheet", async (ctx) => {
         ],
       ];
 
-      ctx.reply(
-        JSON.stringify(Object.keys(arrTimesheet[0][0]))
-          .replace(/"/gi, "")
-          .slice(1, 3)
-      );
-      for (const key of arrTimesheet[0][0].Пн) {
-        setTimeout(() => {
-          ctx.reply(key);
-        }, 1000);
-      }
-      setTimeout(() => {
-        ctx.reply(
+      async function fun(arrTimesheet) {
+        await ctx.reply(
+          JSON.stringify(Object.keys(arrTimesheet[0][0]))
+            .replace(/"/gi, "")
+            .slice(1, 3)
+        );
+        for (const key of arrTimesheet[0][0].Пн) {
+          await ctx.reply(key);
+        }
+        await ctx.reply(
           JSON.stringify(Object.keys(arrTimesheet[1][0]))
             .replace(/"/gi, "")
             .slice(1, 3)
         );
         for (const key of arrTimesheet[1][0].Вт) {
-          setTimeout(() => {
-            ctx.reply(key);
-          }, 1000);
+          await ctx.reply(key);
         }
-      }, 3000);
-      setTimeout(() => {
-        ctx.reply(
+
+        await ctx.reply(
           JSON.stringify(Object.keys(arrTimesheet[2][0]))
             .replace(/"/gi, "")
             .slice(1, 3)
         );
         for (const key of arrTimesheet[2][0].Ср) {
-          setTimeout(() => {
-            ctx.reply(key);
-          }, 1000);
+          await ctx.reply(key);
         }
-      }, 6000);
-      setTimeout(() => {
-        ctx.reply(
+
+        await ctx.reply(
           JSON.stringify(Object.keys(arrTimesheet[3][0]))
             .replace(/"/gi, "")
             .slice(1, 3)
         );
         for (const key of arrTimesheet[3][0].Чт) {
-          setTimeout(() => {
-            ctx.reply(key);
-          }, 1000);
+          await ctx.reply(key);
         }
-      }, 9000);
-      setTimeout(() => {
-        ctx.reply(
+
+        await ctx.reply(
           JSON.stringify(Object.keys(arrTimesheet[4][0]))
             .replace(/"/gi, "")
             .slice(1, 3)
         );
         for (const key of arrTimesheet[4][0].Пт) {
-          setTimeout(() => {
-            ctx.reply(key);
-          }, 1000);
+          await ctx.reply(key);
         }
-      }, 12000);
+      }
+      fun(arrTimesheet);
     });
   };
   parseTimesheet();
