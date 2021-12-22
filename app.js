@@ -10,13 +10,22 @@ const getHtml = async (url) => {
 };
 
 bot.start((ctx) => {
-  ctx.reply("ytn ns");
+  console.log(ctx.update.message.from.first_name);
+  console.log(ctx.update.message.from.username);
+  ctx.reply(`
+  На данный момент доступны следущие команды:
+  /pogoda
+  /timesheet
+  пн, вт, ср, чт, пт и он выводит это день
+  `);
 });
 bot.help((ctx) => {
   ctx.reply("https://weather.rambler.ru/v-kaliningrade/");
 });
 
 bot.command("pogoda", (ctx) => {
+  console.log(ctx.update.message.from.first_name);
+  console.log(ctx.update.message.from.username);
   const parseWeather = async () => {
     const $ = await getHtml("https://weather.rambler.ru/v-kaliningrade/");
     let numPog = Number($("div._1HBR").text()[0]);
@@ -30,7 +39,9 @@ ${$("div.Hixd").text()}
 });
 
 bot.command("timesheet", async (ctx) => {
-  ctx.reply("timesheet");
+  console.log(ctx.update.message.from.first_name);
+  console.log(ctx.update.message.from.username);
+  // ctx.reply("timesheet");
   const parseTimesheet = async () => {
     const URL = "http://109.237.0.203:8083/raspisanie/www/cg38.htm";
     needle.get(URL, function async(err, res) {
@@ -169,7 +180,9 @@ bot.command("timesheet", async (ctx) => {
   parseTimesheet();
 });
 
-bot.on("message", (ctx) => {
+bot.on("message", async (ctx, next) => {
+  console.log(ctx.update.message.from.first_name);
+  console.log(ctx.update.message.from.username);
   let key = ctx.update.message.text;
   const parseTimesheet = async () => {
     const URL = "http://109.237.0.203:8083/raspisanie/www/cg38.htm";
@@ -256,9 +269,6 @@ bot.on("message", (ctx) => {
           },
         ],
       ];
-
-      // async function fun(arrTimesheet) {}
-      // fun(arrTimesheet);
       switch (key) {
         case "пн":
           async function fun(arrTimesheet) {
@@ -272,7 +282,7 @@ bot.on("message", (ctx) => {
             }
           }
           fun(arrTimesheet);
-    
+
           break;
         case "вт":
           async function fun1(arrTimesheet) {
@@ -325,15 +335,25 @@ bot.on("message", (ctx) => {
             }
           }
           fun4(arrTimesheet);
-    
+
           break;
-    
+
         default:
+          ctx.reply("В");
           break;
       }
     });
   };
-  parseTimesheet();
+  await parseTimesheet();
+  return next();
+});
+
+bot.on("message", (ctx, next) => {
+  ctx.reply("1");
+  return next();
+});
+bot.on("message", (ctx) => {
+  ctx.reply("2");
 });
 
 bot.launch().then(console.log("bot start"));
