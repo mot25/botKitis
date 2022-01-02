@@ -9,6 +9,40 @@ const getHtml = async (url) => {
   return cheerio.load(data);
 };
 
+let now = new Date
+
+// let nowDategetSeconds = new Date().getSeconds()
+// console.log('nowDategetSeconds', nowDategetSeconds)
+// let nowDategetMinutes = new Date().getMinutes()
+// console.log('nowDategetMinutes', nowDategetMinutes)
+// let nowDategetHours = new Date().getHours()
+// console.log('nowDategetHours', nowDategetHours)
+// let nowDategetFullYear = new Date().getFullYear()
+// console.log('nowDategetFullYear', nowDategetFullYear)
+// let nowDategetMonth = new Date().getMonth() + 1
+// console.log('nowDategetMonth', nowDategetMonth)
+// let nowDategetDate = new Date().getDate()
+// console.log('nowDategetDate', nowDategetDate)
+/* 
+nowDategetSeconds 44
+nowDategetMinutes 59
+nowDategetHours 7
+nowDategetFullYear 2022
+nowDategetMonth 1
+nowDategetDate 2
+*/
+
+const getMin = (h, m) => {
+  const date = new Date()
+  const getHours = date.getHours()
+  const getMinutes = date.getMinutes()
+  let valMin = getHours * 60 + getMinutes
+  let willDate = (h * 60 + m) - (valMin)
+  console.log('willDate', willDate)
+}
+getMin(10, 00)
+
+
 bot.start((ctx) => {
   console.log(ctx.update.message.from.first_name);
   console.log(ctx.update.message.from.username);
@@ -339,21 +373,12 @@ bot.on("message", async (ctx, next) => {
           break;
 
         default:
-          ctx.reply("В");
           break;
       }
     });
   };
   await parseTimesheet();
   return next();
-});
-
-bot.on("message", (ctx, next) => {
-  ctx.reply("1");
-  return next();
-});
-bot.on("message", (ctx) => {
-  ctx.reply("2");
 });
 
 bot.launch().then(console.log("bot start"));
