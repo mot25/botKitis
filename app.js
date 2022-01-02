@@ -9,7 +9,7 @@ const getHtml = async (url) => {
   return cheerio.load(data);
 };
 
-let now = new Date
+let now = new Date();
 
 // let nowDategetSeconds = new Date().getSeconds()
 // console.log('nowDategetSeconds', nowDategetSeconds)
@@ -32,17 +32,6 @@ nowDategetMonth 1
 nowDategetDate 2
 */
 
-const getMin = (h, m) => {
-  const date = new Date()
-  const getHours = date.getHours()
-  const getMinutes = date.getMinutes()
-  let valMin = getHours * 60 + getMinutes
-  let willDate = (h * 60 + m) - (valMin)
-  console.log('willDate', willDate)
-}
-getMin(10, 00)
-
-
 bot.start((ctx) => {
   console.log(ctx.update.message.from.first_name);
   console.log(ctx.update.message.from.username);
@@ -50,6 +39,7 @@ bot.start((ctx) => {
   На данный момент доступны следущие команды:
   /pogoda
   /timesheet
+  /getmin
   пн, вт, ср, чт, пт и он выводит это день
   `);
 });
@@ -379,6 +369,27 @@ bot.on("message", async (ctx, next) => {
   };
   await parseTimesheet();
   return next();
+});
+
+bot.command("getmin", (ctx) => {
+  const abc = (h, m = 0) => {
+    return h * 60 + m;
+  };
+  let min = abc(new Date().getHours(), new Date().getMinutes());
+  const arrMin = [
+    510, 600, 610, 700, 730, 820, 830, 920, 930, 1020, 1030, 1120,
+  ];
+  let filt = arrMin.filter((item) => item < min);
+  ctx.reply(arrMin[arrMin.indexOf(filt[0]) + 1] - min);
+  // there are minutes left before the bell
+  const getMin = (h, m) => {
+    const date = new Date();
+    const getHours = date.getHours();
+    const getMinutes = date.getMinutes();
+    let valMin = getHours * 60 + getMinutes;
+    let willDate = h * 60 + m - valMin;
+    return willDate;
+  };
 });
 
 bot.launch().then(console.log("bot start"));
