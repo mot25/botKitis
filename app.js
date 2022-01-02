@@ -376,11 +376,25 @@ bot.command("getmin", (ctx) => {
     return h * 60 + m;
   };
   let min = abc(new Date().getHours(), new Date().getMinutes());
+  if (min > 1120 || min < 510) {
+    ctx.reply('Пора домой')
+    return false
+  }
+  // console.log("min", min);
   const arrMin = [
     510, 600, 610, 700, 730, 820, 830, 920, 930, 1020, 1030, 1120,
   ];
-  let filt = arrMin.filter((item) => item < min);
-  ctx.reply(arrMin[arrMin.indexOf(filt[0]) + 1] - min);
+  let filt = arrMin.filter((item) => {
+    return item < min;
+  });
+  let numArrOne = filt.length
+  // console.log("numArrOne", numArrOne);
+  // console.log("filt", filt);
+  // console.log(arrMin[numArrOne]);
+  // console.log(`${arrMin[numArrOne]} - ${min}`);
+
+  // console.log(arrMin[numArrOne] - min);
+  ctx.reply(arrMin[numArrOne] - min);
   // there are minutes left before the bell
   const getMin = (h, m) => {
     const date = new Date();
@@ -391,5 +405,6 @@ bot.command("getmin", (ctx) => {
     return willDate;
   };
 });
+
 
 bot.launch().then(console.log("bot start"));
