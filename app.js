@@ -1,4 +1,4 @@
-const { Telegraf } = require("telegraf");
+const { Telegraf, Markup } = require("telegraf");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const bot = new Telegraf("2123698607:AAEINMnN39PUY0tz470a5QSMBj2UziDnqg4");
@@ -8,48 +8,22 @@ const getHtml = async (url) => {
   const { data } = await axios.get(url);
   return cheerio.load(data);
 };
-
-let now = new Date();
-
-// let nowDategetSeconds = new Date().getSeconds()
-// console.log('nowDategetSeconds', nowDategetSeconds)
-// let nowDategetMinutes = new Date().getMinutes()
-// console.log('nowDategetMinutes', nowDategetMinutes)
-// let nowDategetHours = new Date().getHours()
-// console.log('nowDategetHours', nowDategetHours)
-// let nowDategetFullYear = new Date().getFullYear()
-// console.log('nowDategetFullYear', nowDategetFullYear)
-// let nowDategetMonth = new Date().getMonth() + 1
-// console.log('nowDategetMonth', nowDategetMonth)
-// let nowDategetDate = new Date().getDate()
-// console.log('nowDategetDate', nowDategetDate)
-/* 
-nowDategetSeconds 44
-nowDategetMinutes 59
-nowDategetHours 7
-nowDategetFullYear 2022
-nowDategetMonth 1
-nowDategetDate 2
-*/
-
 bot.start((ctx) => {
-  console.log(ctx.update.message.from.first_name);
-  console.log(ctx.update.message.from.username);
-  ctx.reply(`
-  На данный момент доступны следущие команды:
-  /pogoda
-  /timesheet
-  /getmin
-  пн, вт, ср, чт, пт и он выводит это день
-  `);
+  ctx.reply(
+    'Алоха друг, ты еще не зарегался, так регайся и войди',
+    Markup.keyboard([
+      ["reg", "enter"]
+    ]).oneTime() .resize()
+  );
+});
+bot.action("reg", async (ctx) => {
+  
 });
 bot.help((ctx) => {
   ctx.reply("https://weather.rambler.ru/v-kaliningrade/");
 });
 
 bot.command("pogoda", (ctx) => {
-  console.log(ctx.update.message.from.first_name);
-  console.log(ctx.update.message.from.username);
   const parseWeather = async () => {
     const $ = await getHtml("https://weather.rambler.ru/v-kaliningrade/");
     let numPog = Number($("div._1HBR").text()[0]);
@@ -63,9 +37,15 @@ ${$("div.Hixd").text()}
 });
 
 bot.command("timesheet", async (ctx) => {
-  console.log(ctx.update.message.from.first_name);
-  console.log(ctx.update.message.from.username);
-  // ctx.reply("timesheet");
+  ctx.reply(
+    "whats mode",
+    Markup.inlineKeyboard([
+      Markup.button.callback("full", "full"),
+      Markup.button.callback("day", "day"),
+    ])
+  );
+});
+bot.action("full", async (ctx) => {
   const parseTimesheet = async () => {
     const URL = "http://109.237.0.203:8083/raspisanie/www/cg38.htm";
     needle.get(URL, function async(err, res) {
@@ -203,10 +183,8 @@ bot.command("timesheet", async (ctx) => {
   };
   parseTimesheet();
 });
-
 bot.on("message", async (ctx, next) => {
-  console.log(ctx.update.message.from.first_name);
-  console.log(ctx.update.message.from.username);
+  // Markup.removeKeyboard()
   let key = ctx.update.message.text;
   const parseTimesheet = async () => {
     const URL = "http://109.237.0.203:8083/raspisanie/www/cg38.htm";
@@ -334,7 +312,7 @@ bot.on("message", async (ctx, next) => {
           }
           fun2(arrTimesheet);
           break;
-        case "чт" || "Чт":
+        case "чт":
           async function fun3(arrTimesheet) {
             await ctx.reply(
               JSON.stringify(Object.keys(arrTimesheet[3][0]))
@@ -370,32 +348,31 @@ bot.on("message", async (ctx, next) => {
   await parseTimesheet();
   return next();
 });
-
+bot.action("day", (ctx) => {
+  ctx.reply(
+    "select day",
+    Markup.keyboard([["пн", "вт", "ср", "чт", "пт"]])
+      .resize()
+      .oneTime()
+  );
+});
 bot.command("getmin", (ctx) => {
   const abc = (h, m = 0) => {
     return h * 60 + m;
   };
   let min = abc(new Date().getHours(), new Date().getMinutes());
   if (min > 1120 || min < 510) {
-    ctx.reply('Пора домой')
-    return false
+    ctx.reply("Пора домой");
+    return false;
   }
-  // console.log("min", min);
   const arrMin = [
     510, 600, 610, 700, 730, 820, 830, 920, 930, 1020, 1030, 1120,
   ];
   let filt = arrMin.filter((item) => {
     return item < min;
   });
-  let numArrOne = filt.length
-  // console.log("numArrOne", numArrOne);
-  // console.log("filt", filt);
-  // console.log(arrMin[numArrOne]);
-  // console.log(`${arrMin[numArrOne]} - ${min}`);
-
-  // console.log(arrMin[numArrOne] - min);
+  let numArrOne = filt.length;
   ctx.reply(arrMin[numArrOne] - min);
-  // there are minutes left before the bell
   const getMin = (h, m) => {
     const date = new Date();
     const getHours = date.getHours();
@@ -405,6 +382,5 @@ bot.command("getmin", (ctx) => {
     return willDate;
   };
 });
-
 
 bot.launch().then(console.log("bot start"));
