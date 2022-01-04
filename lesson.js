@@ -3,7 +3,7 @@ const { Telegraf, Markup } = require('telegraf')
 
 const bot = new Telegraf('2123698607:AAEINMnN39PUY0tz470a5QSMBj2UziDnqg4')
 
-bot.use(Telegraf.log())
+// bot.use(Telegraf.log())
 
 bot.command('onetime', (ctx) =>
   ctx.reply('One time keyboard', Markup
@@ -88,7 +88,7 @@ bot.command('caption', (ctx) => {
   )
 })
 
-bot.hears(/\/wrap (\d+)/, (ctx) => {
+bot.hears('caption', (ctx) => {
   return ctx.reply(
     'Keyboard wrap',
     Markup.keyboard(['one', 'two', 'three', 'four', 'five', 'six'], {

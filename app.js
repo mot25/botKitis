@@ -1,4 +1,4 @@
-const { Telegraf, Markup } = require("telegraf");
+const { Telegraf, Scenes: {BaseScene, Stage}, Markup } = require("telegraf");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const bot = new Telegraf("2123698607:AAEINMnN39PUY0tz470a5QSMBj2UziDnqg4");
@@ -354,6 +354,7 @@ bot.action("day", (ctx) => {
     Markup.keyboard([["пн", "вт", "ср", "чт", "пт"]])
       .resize()
       .oneTime()
+      .extra()
   );
 });
 bot.command("getmin", (ctx) => {
