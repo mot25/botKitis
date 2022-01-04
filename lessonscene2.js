@@ -7,13 +7,15 @@ const {
 
 const bot = new Telegraf("2123698607:AAEINMnN39PUY0tz470a5QSMBj2UziDnqg4");
 
+
+
 const nameScene = new BaseScene("nameScene");
 const ageScene = new BaseScene("ageScene");
 
 nameScene.enter((ctx) => ctx.reply("whats your name"));
-nameScene.on("text", (ctx) => {
+nameScene.on("text", async (ctx) => {
   ctx.session.name = ctx.message.text;
-  ctx.reply('save name')
+  await ctx.reply("save name");
   ctx.scene.leave();
 });
 nameScene.leave((ctx) => {
@@ -24,7 +26,7 @@ ageScene.enter((ctx) => {
 });
 ageScene.on("text", async (ctx) => {
   ctx.session.age = ctx.message.text;
-  ctx.reply('save age')
+  ctx.reply("save age");
   ctx.scene.leave();
 });
 ageScene.leave((ctx) => {
@@ -43,3 +45,4 @@ bot.command("readyprofile", (ctx) => {
 });
 
 bot.launch().then(console.log("start"));
+
