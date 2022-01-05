@@ -11,13 +11,13 @@ const bot = new Telegraf("2123698607:AAEINMnN39PUY0tz470a5QSMBj2UziDnqg4");
 const keyExit = Markup.keyboard(["exit"]).oneTime().resize();
 const removeKeyboard = Markup.removeKeyboard();
 
-const nameHendler = Telegraf.on("text", async (ctx) => {
+const nameHendler = Telegraf.on("message", async (ctx) => {
   ctx.session.name = ctx.message.text;
   await ctx.reply("end scene 1", keyExit);
   return ctx.wizard.next();
 });
 
-const ageHandler = Telegraf.on("text", async (ctx) => {
+const ageHandler = Telegraf.on("message", async (ctx) => {
   ctx.session.age = ctx.message.text;
   await ctx.reply("end scene 2", removeKeyboard);
   ctx.scene.leave();
@@ -44,7 +44,12 @@ infoScene.leave(async (ctx) => {
       console.log("DB--ok");
     }
   });
-  let queryInsert = "INSERT INTO users.new_table2 (`name`, `nametg`, `login`, `password`, `group`, `popular`, `love`) VALUES ('"+ ctx.session.name +"', 'rrrrr', 'rrrr', '"+ ctx.session.age +"', 'rrrrrr', '96', 'rrrr')";
+  let queryInsert =
+    "INSERT INTO users.new_table2 (`name`, `nametg`, `login`, `password`, `group`, `popular`, `love`) VALUES ('" +
+    ctx.session.name +
+    "', 'rrrrr', 'rrrr', '" +
+    ctx.session.age +
+    "', 'rrrrrr', '96', 'rrrr')";
   // let queryInsert = `insert  \`new_table\` (\`name\`, \`password\`) values (${ctx.session.name},  ${ctx.session.age}`;
   let query = "select * from new_table2";
   await conn.query(queryInsert, (err, res) => {
@@ -86,7 +91,10 @@ bot.command("bd", async (ctx) => {
       console.log("DB--ok");
     }
   });
-  let queryInsert = "INSERT INTO users.new_table2 (`name`, `nametg`, `login`, `password`, `group`, `popular`, `love`) VALUES ('"+ 'proverka' +"', 'rrrrr', 'rrrr', 'rrrr', 'rrrrrr', '96', 'rrrr')";
+  let queryInsert =
+    "INSERT INTO users.new_table2 (`name`, `nametg`, `login`, `password`, `group`, `popular`, `love`) VALUES ('" +
+    "proverka" +
+    "', 'rrrrr', 'rrrr', 'rrrr', 'rrrrrr', '96', 'rrrr')";
   // let queryInsert = `insert  \`new_table\` (\`name\`, \`password\`) values (${ctx.session.name},  ${ctx.session.age}`;
   let query = "select * from new_table2";
   await conn.query(queryInsert, (err, res) => {

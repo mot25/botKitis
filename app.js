@@ -1,8 +1,17 @@
-const { Telegraf, Scenes: {BaseScene, Stage}, Markup } = require("telegraf");
+const {
+  Telegraf,
+  session,
+  Scenes: { WizardScene, Stage },
+  Markup,
+} = require("telegraf");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const bot = new Telegraf("2123698607:AAEINMnN39PUY0tz470a5QSMBj2UziDnqg4");
 const needle = require("needle");
+const mysql = require("mysql");
+
+const removeKeyboard = Markup.removeKeyboard();
+const exitKeyboard = Markup.keyboard(["Exit"]).oneTime().resize();
 
 const getHtml = async (url) => {
   const { data } = await axios.get(url);
@@ -10,17 +19,166 @@ const getHtml = async (url) => {
 };
 bot.start((ctx) => {
   ctx.reply(
-    'Алоха друг, ты еще не зарегался, так регайся и войди',
-    Markup.keyboard([
-      ["reg", "enter"]
-    ]).oneTime() .resize()
+    "Алоха друг, ты еще не зарегался, так регайся и войди",
+    Markup.keyboard([["reg", "enter"]])
+      .oneTime()
+      .resize()
   );
-});
-bot.action("reg", async (ctx) => {
-  
 });
 bot.help((ctx) => {
   ctx.reply("https://weather.rambler.ru/v-kaliningrade/");
+});
+bot.command("key", (ctx) => {
+  // console.log('ctx', ctx)
+});
+
+const loginScenes = Telegraf.on("message", async (ctx) => {
+  ctx.session.login = ctx.message.text;
+  ctx.reply("Select password...", exitKeyboard);
+  return ctx.wizard.next();
+});
+const passwordScenes = Telegraf.on("message", async (ctx) => {
+  let arr = [
+    "ИС 18-1",
+    "ИС 18-2к",
+    "ИСп 19-1",
+    "ИСп 19-2к",
+    "ИСп 20-1",
+    "ИСп 20-2к",
+    "ИСп 20-3к",
+    "ИСп 20-4к",
+    "ИСп 21-1",
+    "ИСп 21-2к",
+    "ИСр 19-1",
+    "ИСр 19-2к",
+    "ИСр 20-1",
+    "ИСр 20-2к",
+    "ИСр 21-1",
+    "ИСр 21-2к",
+    "М 19-1, М 19-2к",
+    "М 20-1",
+    "М 20-2к",
+    "М 21-1",
+    "М 21-2к",
+    "С 18-1",
+    "С 18-2, С 18-3к",
+    "С 19-1",
+    "С 19-2",
+    "С 19-3к",
+    "С 19-4к",
+    "С 20-1",
+    "С 20-2",
+    "С 20-3, С 20-6к",
+    "С 20-4к",
+    "С 20-5к",
+    "С 21-1",
+    "С 21-2",
+    "С 21-3",
+    "С 21-4к",
+    "СА 18-1, СА 18-2к",
+    "СА 19-1",
+    "СА 19-2к",
+    "СА 20-1",
+    "СА 20-2к",
+    "СА 20-3к",
+    "СА 21-1",
+    "СА 21-2к",
+    "СВ 19-1",
+    "СВ 19-2к",
+    "СВ 20-1",
+    "СВ 20-2к",
+    "СВ 20-3к",
+    "СВ 21-1к",
+    "СОД 20-1, СОД 20-2к",
+    "СОД 21-1",
+    "СОД 21-2к",
+    "СОТ 19-1, СОТ 19-2к",
+    "СПиЛС 19",
+    "УМД 21-1",
+  ];
+  ctx.session.password = ctx.message.text;
+  await ctx.reply(
+    "Select group...",
+    Markup.keyboard(
+      arr.map((item) => {
+        return item;
+      })
+    )
+      .oneTime()
+      .resize()
+  );
+
+  return ctx.wizard.next();
+});
+const groupScenes = Telegraf.on("message", async (ctx) => {
+  ctx.session.group = ctx.message.text;
+  return ctx.scene.leave();
+});
+
+const registrationScense = new WizardScene(
+  "registrationScense",
+  loginScenes,
+  passwordScenes,
+  groupScenes
+);
+registrationScense.enter(async (ctx) => {
+  await ctx.reply("let's start the registration");
+  await ctx.reply("Select login...", exitKeyboard);
+});
+
+registrationScense.leave(async (ctx) => {
+  console.log(ctx.update.message.from.first_name);
+  console.log(ctx.update.message.from.username);
+  const conn = mysql.createConnection({
+    host: "127.0.0.5",
+    user: "root",
+    database: "users",
+    password: "root",
+  });
+  await conn.connect((err) => {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("DB--OK");
+  });
+  const query =
+    "INSERT INTO `users`.`new_table2` (`name`, `nametg`, `login`, `password`, `group`) VALUES ('" +
+    ctx.update.message.from.first_name +
+    "', '" +
+    ctx.update.message.from.username +
+    "', '" +
+    ctx.session.login +
+    "', '" +
+    ctx.session.password +
+    "', '" +
+    ctx.session.group +
+    "')";
+  await conn.query(query, (err, result) => {
+    console.log(err);
+    console.log(result);
+  });
+  await conn.end((err) => {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("DB--CLOSE");
+  });
+  ctx.reply(
+    `
+  login: ${ctx.session.login}
+  password: ${ctx.session.password}
+  group: ${ctx.session.group}
+  `,
+    removeKeyboard
+  );
+});
+
+const stage = new Stage([registrationScense]);
+stage.hears("Exit", (ctx) => ctx.scene.leave());
+bot.use(session());
+bot.use(stage.middleware());
+bot.hears("reg", async (ctx) => {
+  await ctx.scene.enter("registrationScense");
 });
 
 bot.command("pogoda", (ctx) => {
@@ -382,6 +540,9 @@ bot.command("getmin", (ctx) => {
     let willDate = h * 60 + m - valMin;
     return willDate;
   };
+});
+bot.command("ready", async (ctx) => {
+  await ctx.reply("ready");
 });
 
 bot.launch().then(console.log("bot start"));
